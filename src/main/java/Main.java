@@ -1,13 +1,19 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Random;
 import java.util.Scanner;
 import java.lang.*;
+import org.fusesource.jansi.AnsiConsole;
+import static org.fusesource.jansi.Ansi.*;
+import static org.fusesource.jansi.Ansi.Color.*;
 
-public class main {
+public class Main {
 
     public static void main(String[] args) throws FileNotFoundException {
+
+        AnsiConsole.systemInstall();
 
         // Variable list
         int guessesLeft = 6;
@@ -16,8 +22,8 @@ public class main {
         String targetWord = generateTargetWord(wordList);
 
         // Game loop
-        System.out.println("! means that letter is correct and in the right place.");
-        System.out.println("? means the letter is correct but in the wrong place");
+        System.out.println("Green means that letter is correct and in the right place.");
+        System.out.println("Orange means the letter is correct but in the wrong place");
         System.out.println();
 
         while(true) {
@@ -42,6 +48,7 @@ public class main {
 
             if (guessesLeft == 0) {
                 System.out.println("Out of guesses...");
+                System.out.println("The target word was: " + targetWord);
                 break;
             }
         }
@@ -81,17 +88,11 @@ public class main {
     }
 
     public static boolean isWordOnlyLetters(String word) {
-        if (word.matches("[a-zA-Z]+"))  {
-            return true;
-        }
-        return false;
+        return word.matches("[a-zA-Z]+");
     }
 
     public static boolean isWordFiveLetters(String word) {
-        if (word.length() == 5) {
-            return true;
-        }
-        return false;
+        return word.length() == 5;
     }
 
     public static boolean hasWordBeenGuessedAlready(ArrayList<String> previousGuesses, String word) {
@@ -122,28 +123,19 @@ public class main {
     public static void giveFeedbackOnGuess(String targetWord, String guess) {
         char[] targetCharArray = targetWord.toCharArray();
         char[] guessCharArray = guess.toCharArray();
-        char[] feedbackCharArray = {'_', '_', '_', '_', '_'};
 
-        for (int i=0; i<5; i++) {
+        for (int i = 0; i < 5; i++) {
+            String letter = Character.toString(guessCharArray[i]).toUpperCase();
             if (guessCharArray[i] == targetCharArray[i]) {
-                feedbackCharArray[i] = '!';
+                System.out.print(ansi().bg(GREEN).a(letter).reset());
+                System.out.print("   ");
+            } else if (targetWord.contains(Character.toString(guessCharArray[i]))) {
+                System.out.print(ansi().bg(208).a(letter).reset());
+                System.out.print("   ");
+            } else {
+                System.out.print(letter);
+                System.out.print("   ");
             }
-            else if(targetWord.contains(Character.toString(guessCharArray[i]))) {
-                feedbackCharArray[i] = '?';
-            }
         }
-
-        for (char c : guessCharArray) {
-            System.out.print(Character.toUpperCase(c));
-            System.out.print("   ");
-        }
-        System.out.println();
-
-        for (char c : feedbackCharArray) {
-            System.out.print(c);
-            System.out.print("   ");
-        }
-        System.out.println();
     }
-
 }
