@@ -1,24 +1,26 @@
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Random;
 import java.util.Scanner;
 import java.lang.*;
+
 import org.fusesource.jansi.AnsiConsole;
+
 import static org.fusesource.jansi.Ansi.*;
 import static org.fusesource.jansi.Ansi.Color.*;
 
 public class Main {
 
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) throws IOException {
 
         AnsiConsole.systemInstall();
 
         // Variable list
         int guessesLeft = 6;
         ArrayList<String> previousGuesses = new ArrayList<String>();
-        ArrayList<String> wordList = prepareListFromFile("src/main/resources/word_list.txt");
+        ArrayList<String> wordList = getWordList();
+
         String targetWord = generateTargetWord(wordList);
 
         // Game loop
@@ -26,7 +28,7 @@ public class Main {
         System.out.println("Orange means the letter is correct but in the wrong place");
         System.out.println();
 
-        while(true) {
+        while (true) {
             System.out.println("Guesses left = " + guessesLeft);
             System.out.println();
             System.out.println("Enter your guess:");
@@ -57,6 +59,22 @@ public class Main {
 
 
     }
+
+    public static ArrayList<String> getWordList() throws IOException {
+        String resource = "word_list.txt";
+        ArrayList<String> wordList = new ArrayList<String>();
+        InputStream in = Main.class.getClassLoader().getResourceAsStream("/resources/" + resource);
+        if (in == null) {
+            in = Main.class.getClassLoader().getResourceAsStream(resource);
+        }
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+        while (reader.readLine() != null) {
+            wordList.add(reader.readLine());
+        }
+
+        return wordList;
+    }
+
 
     public static boolean isWordValid(ArrayList<String> wordList, ArrayList<String> previousGuesses, String word) {
         if (!isWordOnlyLetters(word)) {
@@ -107,7 +125,7 @@ public class Main {
     public static ArrayList<String> prepareListFromFile(String filePath) throws FileNotFoundException {
         Scanner sc1 = new Scanner(new File(filePath));
         ArrayList<String> wordList = new ArrayList<String>();
-        while(sc1.hasNextLine()) {
+        while (sc1.hasNextLine()) {
             wordList.add(sc1.nextLine());
         }
         return wordList;
