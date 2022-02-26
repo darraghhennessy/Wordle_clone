@@ -1,1 +1,1 @@
-web: java -jar target/*dependencies.jar
+web: java -jar target/wordle_clone-1.0-SNAPSHOT.jar
